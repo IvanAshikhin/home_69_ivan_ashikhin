@@ -21,5 +21,6 @@ import task_1
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('task_1.urls'))
+    path('', include('task_1.urls')),
+    path('', include('task_2.urls'))
 ]

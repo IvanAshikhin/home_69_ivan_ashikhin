@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<label for="num1">First Number</label>
+<input type="number" id="num1">
+<label for="num2">Second Number</label>
+<input type="number" id="num2">
+<br>
+<button class="operation" data-action="add">Add</button>
+<button class="operation" data-action="subtract">Subtract</button>
+<button class="operation" data-action="multiply">Multiply</button>
+<button class="operation" data-action="divide">Divide</button>
+<br>
+<div id="result"></div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".operation").click(function () {
+            let num1 = $("#num1").val();
+            let num2 = $("#num2").val();
+            let action = $(this).data("action");
+            let url = "/task_2/calculate/";
+
+            function getCookie(name) {
+                if (!document.cookie) {
+                    return null;
+                }
+                const cookies = document.cookie.split(';')
+                    .map(o => o.trim())
+                    .filter(o => o.startsWith(name + '='));
+                if (cookies.length === 0) {
+                    return null;
+                }
+                return decodeURIComponent(cookies[0].split('=')[1]);
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({"num1": num1, "num2": num2, "operation": action}),
+                dataType: "json",
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                success: function (data) {
+                    $("#result").removeClass("error").addClass("success").text("Result: " + data.result).css('color', 'green');
+                },
+                error: function () {
+                    $("#result").removeClass("success").addClass("error").text('Error').css('color', 'red');
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>
