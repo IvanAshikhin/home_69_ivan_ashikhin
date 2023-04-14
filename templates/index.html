@@ -5,10 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Calculator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#calculator-form").on("submit", function (event) {
+                event.preventDefault();
+                const num1 = $("#num1").val();
+                const num2 = $("#num2").val();
+                const operation = $('input[name="operation"]:checked').val();
+                const url = `http://127.0.0.1:8000/${operation}/`;
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    dataType: "json",
+                    data: JSON.stringify({A: num1, B: num2}),
+                    headers: {"X-CSRFToken": $('[name="csrfmiddlewaretoken"]').val()},
+                    success: function (data) {
+                        $("#result").text(`Result: ${data.answer}`).removeClass("error").addClass("success").css("color", "green");
+                    },
+                    error: function () {
+                        $("#result").text("Error").removeClass("success").addClass("error").css("color", "red");
+                    },
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <h1>Calculator</h1>
+{% csrf_token %}
 <form id="calculator-form">
+
     <label for="num1">First Number:</label>
     <input type="number" id="num1" name="num1" required>
     <br>
@@ -34,48 +62,5 @@
 </form>
 <br>
 <div id="result"></div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("#calculator-form").submit(function (event) {
-            event.preventDefault();
-            let num1 = $("#num1").val();
-            let num2 = $("#num2").val();
-            let operation = $("input[name='operation']:checked").val();
-            let url = "http://127.0.0.1:8000/" + operation + "/";
-
-            function getCookie(name) {
-                if (!document.cookie) {
-                    return null;
-                }
-                const cookies = document.cookie.split(';')
-                    .map(o => o.trim())
-                    .filter(o => o.startsWith(name + '='));
-                if (cookies.length === 0) {
-                    return null;
-                }
-                return decodeURIComponent(cookies[0].split('=')[1]);
-            }
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: JSON.stringify({"A": num1, "B": num2}),
-                dataType: "json",
-                contentType: "application/json",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken")
-                },
-                success: function (data) {
-                    $("#result").removeClass("error").addClass("success").text("Result: " + data.answer).css('color', 'green')
-                },
-                error: function () {
-                    $("#result").removeClass("success").addClass("error").text('Error').css('color', 'red');
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>
