@@ -1,6 +1,7 @@
 from django.urls import path
-from task_2.views import calculate
+
+from task_2.views import IndexView
 
 urlpatterns = [
-    path('task_2/calculate/', calculate, name='calculate'),
+    path('', IndexView.as_view(), name='index'),
 ]
